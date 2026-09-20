@@ -6,10 +6,12 @@ import asyncio
 import base64
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+import os
 from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, WebSocket, WebSocketDisconnect, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -346,3 +348,8 @@ async def live_socket(websocket: WebSocket) -> None:
             await websocket.close()
         except (RuntimeError, WebSocketDisconnect):
             pass
+
+
+# Servir os ficheiros da pasta web na raiz para exibir a interface gráfica
+if os.path.exists("web"):
+    app.mount("/", StaticFiles(directory="web", html=True), name="web")
